@@ -1,0 +1,769 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8[5]",
+						"name": "communityCards",
+						"type": "uint8[5]"
+					}
+				],
+				"name": "CommunityCardsDealt",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "GameStarted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "HandStarted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "enum TexasHoldem.GamePhase",
+						"name": "newPhase",
+						"type": "uint8"
+					}
+				],
+				"name": "PhaseChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "PlayerAction",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "PlayerJoined",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "PlayerLeft",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					}
+				],
+				"name": "TableCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address[]",
+						"name": "winners",
+						"type": "address[]"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "WinnerDetermined",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_PLAYERS",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_TABLES",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "TURN_TIMEOUT",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "allIn",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "call",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "check",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_minBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_maxBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_smallBlind",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_bigBlind",
+						"type": "uint256"
+					}
+				],
+				"name": "createTable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "fold",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "playerAddr",
+						"type": "address"
+					}
+				],
+				"name": "getPlayerState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "addr",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "chips",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "bet",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8[2]",
+								"name": "holeCards",
+								"type": "uint8[2]"
+							},
+							{
+								"internalType": "bool",
+								"name": "inHand",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "hasActed",
+								"type": "bool"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastActionTimestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TexasHoldem.Player",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getTableState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum TexasHoldem.TableStatus",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "minBuyIn",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "maxBuyIn",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "smallBlind",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "bigBlind",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8",
+								"name": "dealerIndex",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "actionIndex",
+								"type": "uint8"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "addr",
+										"type": "address"
+									},
+									{
+										"internalType": "uint256",
+										"name": "chips",
+										"type": "uint256"
+									},
+									{
+										"internalType": "uint256",
+										"name": "bet",
+										"type": "uint256"
+									},
+									{
+										"internalType": "uint8[2]",
+										"name": "holeCards",
+										"type": "uint8[2]"
+									},
+									{
+										"internalType": "bool",
+										"name": "inHand",
+										"type": "bool"
+									},
+									{
+										"internalType": "bool",
+										"name": "hasActed",
+										"type": "bool"
+									},
+									{
+										"internalType": "uint256",
+										"name": "lastActionTimestamp",
+										"type": "uint256"
+									}
+								],
+								"internalType": "struct TexasHoldem.Player[]",
+								"name": "players",
+								"type": "tuple[]"
+							},
+							{
+								"internalType": "uint8[52]",
+								"name": "deck",
+								"type": "uint8[52]"
+							},
+							{
+								"internalType": "uint8",
+								"name": "deckIndex",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8[5]",
+								"name": "communityCards",
+								"type": "uint8[5]"
+							},
+							{
+								"internalType": "enum TexasHoldem.GamePhase",
+								"name": "phase",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "currentBet",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "minRaise",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "uint256",
+										"name": "size",
+										"type": "uint256"
+									},
+									{
+										"internalType": "address[]",
+										"name": "eligiblePlayers",
+										"type": "address[]"
+									}
+								],
+								"internalType": "struct TexasHoldem.Pot[]",
+								"name": "pots",
+								"type": "tuple[]"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastActivityTimestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TexasHoldem.Table",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "buyInAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "joinTable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "leaveTable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "playerTableId",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "raiseAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "raise",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "tables",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum TexasHoldem.TableStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "maxBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "smallBlind",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "bigBlind",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "dealerIndex",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "actionIndex",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "deckIndex",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum TexasHoldem.GamePhase",
+						"name": "phase",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentBet",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minRaise",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lastActivityTimestamp",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Gemini",
+			"details": "WARNING: This contract is for educational purposes only and is NOT SECURE for real money. It suffers from two major vulnerabilities: 1. Public Card Information: All card data is stored on-chain and is publicly readable. This means a malicious actor can read the deck and players' cards. 2. Insecure Randomness: The card shuffling mechanism is predictable and exploitable. A determined attacker can manipulate the outcome of the shuffle. This contract is designed to be deployed on Base or other EVM-compatible chains.",
+			"kind": "dev",
+			"methods": {
+				"createTable(uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_bigBlind": "The big blind amount.",
+						"_maxBuyIn": "The maximum chips a player can have at the table.",
+						"_minBuyIn": "The minimum chips required to join.",
+						"_smallBlind": "The small blind amount."
+					}
+				},
+				"getPlayerState(uint256,address)": {
+					"params": {
+						"playerAddr": "The address of the player.",
+						"tableId": "The ID of the table."
+					},
+					"returns": {
+						"_0": "A tuple containing all player state variables."
+					}
+				},
+				"getTableState(uint256)": {
+					"params": {
+						"tableId": "The ID of the table."
+					},
+					"returns": {
+						"_0": "A tuple containing all table state variables."
+					}
+				},
+				"joinTable(uint256,uint256)": {
+					"params": {
+						"buyInAmount": "The amount of chips to bring to the table.",
+						"tableId": "The ID of the table to join."
+					}
+				},
+				"leaveTable(uint256)": {
+					"params": {
+						"tableId": "The ID of the table to leave."
+					}
+				}
+			},
+			"title": "TexasHoldem",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"createTable(uint256,uint256,uint256,uint256)": {
+					"notice": "Creates a new poker table."
+				},
+				"getPlayerState(uint256,address)": {
+					"notice": "Retrieves a player's state at a specific table."
+				},
+				"getTableState(uint256)": {
+					"notice": "Retrieves the full state of a specific table."
+				},
+				"joinTable(uint256,uint256)": {
+					"notice": "Joins an existing table with a specified buy-in amount."
+				},
+				"leaveTable(uint256)": {
+					"notice": "Leaves a poker table."
+				}
+			},
+			"notice": "A feature-complete implementation of a Texas Hold'em poker game.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/poker.sol": "TexasHoldem"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": [],
+		"viaIR": true
+	},
+	"sources": {
+		"contracts/poker.sol": {
+			"keccak256": "0x2495d76688ce1fc2a4bd2222ef7f161b5c3fd39ec8a597e92527fe441e1bdbde",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ad233baecf26f53c96602f82bf164ed824550e343b345b1b89b16a52e4773bc8",
+				"dweb:/ipfs/QmZmrHZRUPe6i9tQe8uBmwLHWkLnWKCZnjgN41qaweopx2"
+			]
+		}
+	},
+	"version": 1
+}

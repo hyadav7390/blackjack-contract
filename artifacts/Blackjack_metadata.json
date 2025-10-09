@@ -1,0 +1,1924 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "BetPlaced",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "rank",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "suit",
+								"type": "uint8"
+							}
+						],
+						"indexed": false,
+						"internalType": "struct Blackjack.Card",
+						"name": "card",
+						"type": "tuple"
+					}
+				],
+				"name": "CardDealt",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "ethAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "chipAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "ChipsConverted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "ethAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "chipAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "ChipsPurchased",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "chipAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "ethAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "ChipsWithdrawn",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					}
+				],
+				"name": "DealerAction",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "rank",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "suit",
+								"type": "uint8"
+							}
+						],
+						"indexed": false,
+						"internalType": "struct Blackjack.Card",
+						"name": "card",
+						"type": "tuple"
+					}
+				],
+				"name": "DealerCardRevealed",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "rank",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "suit",
+								"type": "uint8"
+							}
+						],
+						"indexed": false,
+						"internalType": "struct Blackjack.Card",
+						"name": "card",
+						"type": "tuple"
+					}
+				],
+				"name": "DealerHoleCardRevealed",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "FreeChipsClaimed",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "GameStarted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "HandStarted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "HandValueCalculated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "PayoutSent",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "enum Blackjack.GamePhase",
+						"name": "newPhase",
+						"type": "uint8"
+					}
+				],
+				"name": "PhaseChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "action",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "PlayerAction",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "PlayerBusted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "PlayerJoined",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "PlayerLeft",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "PlayerStood",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					}
+				],
+				"name": "TableCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address[]",
+						"name": "winners",
+						"type": "address[]"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256[]",
+						"name": "amounts",
+						"type": "uint256[]"
+					}
+				],
+				"name": "WinnerDetermined",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "BLACKJACK_PAYOUT",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "CHIPS_PER_ETH",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_PLAYERS",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_TABLES",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "TURN_TIMEOUT",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "WEI_PER_CHIP",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "buyChips",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "rank",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "suit",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct Blackjack.Card[]",
+						"name": "cards",
+						"type": "tuple[]"
+					}
+				],
+				"name": "calculateHandValue",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "cashOut",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "chipAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "chipsToEth",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "claimFreeChips",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_minBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_maxBuyIn",
+						"type": "uint256"
+					}
+				],
+				"name": "createTable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "doubleDown",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "ethAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "ethToChips",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "forceDealerTurn",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllTables",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum Blackjack.TableStatus",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "minBuyIn",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "maxBuyIn",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8[52]",
+								"name": "deck",
+								"type": "uint8[52]"
+							},
+							{
+								"internalType": "uint8",
+								"name": "deckIndex",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum Blackjack.GamePhase",
+								"name": "phase",
+								"type": "uint8"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "addr",
+										"type": "address"
+									},
+									{
+										"internalType": "uint256",
+										"name": "chips",
+										"type": "uint256"
+									},
+									{
+										"internalType": "uint256",
+										"name": "bet",
+										"type": "uint256"
+									},
+									{
+										"components": [
+											{
+												"internalType": "uint8",
+												"name": "rank",
+												"type": "uint8"
+											},
+											{
+												"internalType": "uint8",
+												"name": "suit",
+												"type": "uint8"
+											}
+										],
+										"internalType": "struct Blackjack.Card[]",
+										"name": "cards",
+										"type": "tuple[]"
+									},
+									{
+										"internalType": "bool",
+										"name": "isActive",
+										"type": "bool"
+									},
+									{
+										"internalType": "bool",
+										"name": "hasActed",
+										"type": "bool"
+									}
+								],
+								"internalType": "struct Blackjack.Player[]",
+								"name": "players",
+								"type": "tuple[]"
+							},
+							{
+								"components": [
+									{
+										"components": [
+											{
+												"internalType": "uint8",
+												"name": "rank",
+												"type": "uint8"
+											},
+											{
+												"internalType": "uint8",
+												"name": "suit",
+												"type": "uint8"
+											}
+										],
+										"internalType": "struct Blackjack.Card[]",
+										"name": "cards",
+										"type": "tuple[]"
+									},
+									{
+										"internalType": "bool",
+										"name": "hasFinished",
+										"type": "bool"
+									}
+								],
+								"internalType": "struct Blackjack.Dealer",
+								"name": "dealer",
+								"type": "tuple"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastActivityTimestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Blackjack.Table[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getConversionRates",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "chipsPerEth",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "weiPerChip",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getDealerState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"components": [
+									{
+										"internalType": "uint8",
+										"name": "rank",
+										"type": "uint8"
+									},
+									{
+										"internalType": "uint8",
+										"name": "suit",
+										"type": "uint8"
+									}
+								],
+								"internalType": "struct Blackjack.Card[]",
+								"name": "cards",
+								"type": "tuple[]"
+							},
+							{
+								"internalType": "bool",
+								"name": "hasFinished",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Blackjack.Dealer",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getDetailedGameState",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableStatus",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gamePhase",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "playerCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "activePlayers",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "canPlayerAct",
+						"type": "bool"
+					},
+					{
+						"internalType": "address",
+						"name": "nextPlayer",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "isMyTurnResult",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getGameSummary",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableStatus",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gamePhase",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "playerCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "activePlayers",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "nextPlayer",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "dealerCardCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "potSize",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getNextPlayer",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "getPlayerChips",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "getPlayerInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "chips",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "hasClaimedFree",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "isAtTable",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "playerAddr",
+						"type": "address"
+					}
+				],
+				"name": "getPlayerState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "addr",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "chips",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "bet",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "uint8",
+										"name": "rank",
+										"type": "uint8"
+									},
+									{
+										"internalType": "uint8",
+										"name": "suit",
+										"type": "uint8"
+									}
+								],
+								"internalType": "struct Blackjack.Card[]",
+								"name": "cards",
+								"type": "tuple[]"
+							},
+							{
+								"internalType": "bool",
+								"name": "isActive",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "hasActed",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Blackjack.Player",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "getPlayerTableId",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getTablePlayers",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "addr",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "chips",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "bet",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "uint8",
+										"name": "rank",
+										"type": "uint8"
+									},
+									{
+										"internalType": "uint8",
+										"name": "suit",
+										"type": "uint8"
+									}
+								],
+								"internalType": "struct Blackjack.Card[]",
+								"name": "cards",
+								"type": "tuple[]"
+							},
+							{
+								"internalType": "bool",
+								"name": "isActive",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "hasActed",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Blackjack.Player[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "getTableState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "enum Blackjack.TableStatus",
+								"name": "status",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint256",
+								"name": "minBuyIn",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "maxBuyIn",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8[52]",
+								"name": "deck",
+								"type": "uint8[52]"
+							},
+							{
+								"internalType": "uint8",
+								"name": "deckIndex",
+								"type": "uint8"
+							},
+							{
+								"internalType": "enum Blackjack.GamePhase",
+								"name": "phase",
+								"type": "uint8"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "addr",
+										"type": "address"
+									},
+									{
+										"internalType": "uint256",
+										"name": "chips",
+										"type": "uint256"
+									},
+									{
+										"internalType": "uint256",
+										"name": "bet",
+										"type": "uint256"
+									},
+									{
+										"components": [
+											{
+												"internalType": "uint8",
+												"name": "rank",
+												"type": "uint8"
+											},
+											{
+												"internalType": "uint8",
+												"name": "suit",
+												"type": "uint8"
+											}
+										],
+										"internalType": "struct Blackjack.Card[]",
+										"name": "cards",
+										"type": "tuple[]"
+									},
+									{
+										"internalType": "bool",
+										"name": "isActive",
+										"type": "bool"
+									},
+									{
+										"internalType": "bool",
+										"name": "hasActed",
+										"type": "bool"
+									}
+								],
+								"internalType": "struct Blackjack.Player[]",
+								"name": "players",
+								"type": "tuple[]"
+							},
+							{
+								"components": [
+									{
+										"components": [
+											{
+												"internalType": "uint8",
+												"name": "rank",
+												"type": "uint8"
+											},
+											{
+												"internalType": "uint8",
+												"name": "suit",
+												"type": "uint8"
+											}
+										],
+										"internalType": "struct Blackjack.Card[]",
+										"name": "cards",
+										"type": "tuple[]"
+									},
+									{
+										"internalType": "bool",
+										"name": "hasFinished",
+										"type": "bool"
+									}
+								],
+								"internalType": "struct Blackjack.Dealer",
+								"name": "dealer",
+								"type": "tuple"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastActivityTimestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct Blackjack.Table",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getTablesCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "hasClaimedFreeChips",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "hasPlayerClaimedFreeChips",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "hit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "rank",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "suit",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct Blackjack.Card[]",
+						"name": "cards",
+						"type": "tuple[]"
+					}
+				],
+				"name": "isBlackjack",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "rank",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint8",
+								"name": "suit",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct Blackjack.Card[]",
+						"name": "cards",
+						"type": "tuple[]"
+					}
+				],
+				"name": "isBusted",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					}
+				],
+				"name": "isPlayerTurn",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "buyInAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "joinTable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "leaveTable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "pause",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "paused",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "betAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "placeBet",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "playerChips",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "playerTableId",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tableId",
+						"type": "uint256"
+					}
+				],
+				"name": "stand",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "tables",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum Blackjack.TableStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "maxBuyIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "deckIndex",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum Blackjack.GamePhase",
+						"name": "phase",
+						"type": "uint8"
+					},
+					{
+						"components": [
+							{
+								"components": [
+									{
+										"internalType": "uint8",
+										"name": "rank",
+										"type": "uint8"
+									},
+									{
+										"internalType": "uint8",
+										"name": "suit",
+										"type": "uint8"
+									}
+								],
+								"internalType": "struct Blackjack.Card[]",
+								"name": "cards",
+								"type": "tuple[]"
+							},
+							{
+								"internalType": "bool",
+								"name": "hasFinished",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct Blackjack.Dealer",
+						"name": "dealer",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lastActivityTimestamp",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "unpause",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "chipAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawChips",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Gemini",
+			"details": "Designed for educational purposes and FHE integration with Zama. For real use, implement secure randomness and consider FHE for card privacy.",
+			"kind": "dev",
+			"methods": {
+				"cashOut(uint256)": {
+					"params": {
+						"tableId": "The ID of the table to leave"
+					}
+				},
+				"createTable(uint256,uint256)": {
+					"params": {
+						"_maxBuyIn": "Maximum buy-in for the table",
+						"_minBuyIn": "Minimum bet for the table"
+					}
+				},
+				"joinTable(uint256,uint256)": {
+					"params": {
+						"buyInAmount": "The amount of chips to bring to the table",
+						"tableId": "The ID of the table to join"
+					}
+				},
+				"leaveTable(uint256)": {
+					"params": {
+						"tableId": "The ID of the table to leave"
+					}
+				},
+				"placeBet(uint256,uint256)": {
+					"params": {
+						"betAmount": "The amount to bet (must be between minBuyIn and remaining chips)",
+						"tableId": "The ID of the table"
+					}
+				}
+			},
+			"title": "Blackjack",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"buyChips()": {
+					"notice": "Buy chips with ETH"
+				},
+				"calculateHandValue((uint8,uint8)[])": {
+					"notice": "Calculate hand value for frontend display"
+				},
+				"cashOut(uint256)": {
+					"notice": "Cash out chips and leave the table"
+				},
+				"chipsToEth(uint256)": {
+					"notice": "Convert chips to ETH (for frontend calculation)"
+				},
+				"claimFreeChips()": {
+					"notice": "Claim free 10,000 chips (one time per address)"
+				},
+				"createTable(uint256,uint256)": {
+					"notice": "Creates a new blackjack table"
+				},
+				"doubleDown(uint256)": {
+					"notice": "Double down (double your bet and take one more card)"
+				},
+				"ethToChips(uint256)": {
+					"notice": "Convert ETH to chips (for frontend calculation)"
+				},
+				"forceDealerTurn(uint256)": {
+					"notice": "Force advance to dealer turn (for testing/debugging)"
+				},
+				"getAllTables()": {
+					"notice": "Get all available tables"
+				},
+				"getConversionRates()": {
+					"notice": "Get chip to ETH conversion rate info"
+				},
+				"getDetailedGameState(uint256)": {
+					"notice": "Get detailed game state for debugging"
+				},
+				"getGameSummary(uint256)": {
+					"notice": "Get game summary for a table (for frontend display)"
+				},
+				"getNextPlayer(uint256)": {
+					"notice": "Get the next player who needs to act (for frontend)"
+				},
+				"getPlayerChips(address)": {
+					"notice": "Get player's total chips (outside of tables)"
+				},
+				"getPlayerInfo(address)": {
+					"notice": "Get comprehensive player information"
+				},
+				"getPlayerTableId(address)": {
+					"notice": "Get player's current table ID (0 means not at any table)"
+				},
+				"getTablesCount()": {
+					"notice": "Get tables count"
+				},
+				"hasPlayerClaimedFreeChips(address)": {
+					"notice": "Check if player has claimed free chips"
+				},
+				"hit(uint256)": {
+					"notice": "Request another card (hit)"
+				},
+				"isBlackjack((uint8,uint8)[])": {
+					"notice": "Check if a hand is blackjack"
+				},
+				"isBusted((uint8,uint8)[])": {
+					"notice": "Check if a hand is busted"
+				},
+				"isPlayerTurn(uint256,address)": {
+					"notice": "Check if it's a specific player's turn"
+				},
+				"joinTable(uint256,uint256)": {
+					"notice": "Joins an existing table with chips from player's balance"
+				},
+				"leaveTable(uint256)": {
+					"notice": "Leaves the current table"
+				},
+				"placeBet(uint256,uint256)": {
+					"notice": "Place a bet to join the current hand"
+				},
+				"stand(uint256)": {
+					"notice": "Stand (end your turn)"
+				},
+				"withdrawChips(uint256)": {
+					"notice": "Withdraw chips as ETH"
+				}
+			},
+			"notice": "A feature-complete implementation of a Blackjack game for Base blockchain.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/blackjack.sol": "Blackjack"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": [],
+		"viaIR": true
+	},
+	"sources": {
+		"contracts/blackjack.sol": {
+			"keccak256": "0x3873f16cafae73fb66554f03fc0b07e9419f60b03524cb9f79d24f54186839e6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://290e0ee7c5ce7d1c24f88e5e63ae02809f719288d09a6f305176e8d84c3baf2f",
+				"dweb:/ipfs/QmPjZVMFpZCWSn4ncP1gzjuWAebm8vjezPRrMGsGYiztxK"
+			]
+		}
+	},
+	"version": 1
+}
