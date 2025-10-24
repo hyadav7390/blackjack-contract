@@ -3,16 +3,17 @@ pragma solidity ^0.8.20;
 
 /**
  * @title Blackjack
- * @author Gemini
- * @notice A feature-complete implementation of a Blackjack game for Base blockchain.
+ * @notice A feature-complete implementation of a Blackjack game for sepolia blockchain.
  * @dev Educational demo; randomness is NOT secure. For production, use VRF and consider FHE for privacy.
  */
 contract Blackjack {
     // ========= Enums & Structs =========
     enum TableStatus { Waiting, Active, Closed }
     enum GamePhase { WaitingForPlayers, Dealing, PlayerTurns, DealerTurn, Showdown, Completed }
+    enum Outcome { Lose, Win, Push, Blackjack }
 
-    struct Card { uint8 rank; /* 2-14 (11=J, 12=Q, 13=K, 14=A) */ uint8 suit; /* 0..3 hearts,diamonds,clubs,spades */ }
+    struct Card { uint8 rank; /* 2-14 (11=J,12=Q,13=K,14=A) */ uint8 suit; /* 0..3 hearts,diamonds,clubs,spades */ }
+
     struct Player {
         address addr;
         uint chips;
@@ -21,7 +22,27 @@ contract Blackjack {
         bool isActive;  // in current hand
         bool hasActed;  // this turn
     }
+
     struct Dealer { Card[] cards; bool hasFinished; }
+
+    struct PlayerResult {
+        address addr;
+        uint bet;
+        uint total;
+        Outcome outcome;
+        uint payout;
+        Card[] cards;
+    }
+
+    struct HandResult {
+        Card[] dealerCards;
+        uint dealerTotal;
+        bool dealerBusted;
+        PlayerResult[] results;
+        uint pot;
+        uint timestamp;
+    }
+
     struct Table {
         uint id;
         TableStatus status;
@@ -33,25 +54,30 @@ contract Blackjack {
         Player[] players;
         Dealer dealer;
         uint lastActivityTimestamp;
+
+        HandResult lastHandResult;  // persisted snapshot for UI
     }
 
     // ========= State =========
     Table[] public tables;
-    uint public constant MAX_TABLES   = 10;
-    uint public constant MAX_PLAYERS  = 4;               // ✅ set to 4
+    uint public constant MAX_TABLES  = 10;
+    uint public constant MAX_PLAYERS = 4;
     uint public constant TURN_TIMEOUT = 30 seconds;
 
     // Blackjack payout: 3:2 (total returned = 2.5x bet)
     uint public constant BLACKJACK_PAYOUT_NUM = 3; // numerator
     uint public constant BLACKJACK_PAYOUT_DEN = 2; // denominator
 
-    // Economy: 10,000 chips = 0.0001 ETH  =>  1 ETH = 100,000,000 chips
-    uint public constant CHIPS_PER_ETH = 100_000_000;
-    uint public constant WEI_PER_CHIP  = 1e18 / CHIPS_PER_ETH; // == 10,000,000,000
+    // Economy & bank
+    uint public constant CHIPS_PER_ETH = 100_000_000;          // 1 ETH = 100,000,000 chips
+    uint public constant WEI_PER_CHIP  = 1e18 / CHIPS_PER_ETH; // 10,000,000,000 wei
+    uint public constant INITIAL_BANK_CHIPS = 1_000_000_000;   // 1B chips (~10 ETH equivalent)
 
     mapping(address => uint) public playerTableId; // player -> tableId (0 if none)
-    mapping(address => bool) public hasClaimedFreeChips; // ✅ keep public (auto getter)
+    mapping(address => bool) public hasClaimedFreeChips;
     mapping(address => uint) public playerChips;   // wallet chips (not at table)
+
+    uint public bankChips; // dealer bank in chips (backing payouts)
 
     // Reentrancy guard
     bool private _locked;
@@ -82,6 +108,10 @@ contract Blackjack {
     event ChipsWithdrawn(address indexed player, uint chipAmount, uint weiAmount);
     event TurnAutoAdvanced(uint indexed tableId, address indexed playerTimedOut, string reason);
     event TableChipsToppedUp(uint indexed tableId, address indexed player, uint amount);
+    event BankFunded(uint weiAmount, uint chipsAdded);
+    event BankDefunded(uint chipsWithdrawn, uint weiAmount);
+    event HandResultStored(uint indexed tableId, uint timestamp);
+    event BankInitialized(uint chips); // NEW: prefund-at-deploy (no ETH)
 
     // ========= Modifiers =========
     modifier nonReentrant() { require(!_locked, "ReentrancyGuard"); _locked = true; _; _locked = false; }
@@ -102,7 +132,11 @@ contract Blackjack {
     }
 
     // ========= Constructor =========
-    constructor() { owner = msg.sender; }
+    constructor() {
+        owner = msg.sender;
+        bankChips = INITIAL_BANK_CHIPS;         // << Prefund in chips only
+        emit BankInitialized(INITIAL_BANK_CHIPS);
+    }
 
     // ========= Views for frontend =========
     function getTableState(uint tableId) external view returns (Table memory) {
@@ -133,6 +167,24 @@ contract Blackjack {
 
     function getNextPlayer(uint tableId) external view returns (address) {
         return _nextPlayerAddr(tableId);
+    }
+
+    // Provide last hand snapshot for UI
+    function getLastHandResult(uint tableId)
+        external
+        view
+        returns (
+            Card[] memory dealerCards,
+            uint dealerTotal,
+            bool dealerBusted,
+            PlayerResult[] memory results,
+            uint pot,
+            uint timestamp
+        )
+    {
+        Table storage t = _getTable(tableId);
+        HandResult storage hr = t.lastHandResult;
+        return (hr.dealerCards, hr.dealerTotal, hr.dealerBusted, hr.results, hr.pot, hr.timestamp);
     }
 
     // ========= Internals (shared) =========
@@ -197,15 +249,15 @@ contract Blackjack {
         require(chipAmount > 0, "Zero");
         require(playerChips[msg.sender] >= chipAmount, "Insufficient chips");
         require(playerTableId[msg.sender] == 0, "Leave table first");
-        playerChips[msg.sender] -= chipAmount;
         uint weiAmount = chipsToWei(chipAmount);
+        require(address(this).balance >= weiAmount, "Contract lacks ETH");
+        playerChips[msg.sender] -= chipAmount;
         (bool ok,) = payable(msg.sender).call{value: weiAmount}("");
         require(ok, "ETH transfer failed");
         emit ChipsWithdrawn(msg.sender, chipAmount, weiAmount);
     }
 
     function getPlayerChips(address player) external view returns (uint) { return playerChips[player]; }
-    // REMOVED hasPlayerClaimedFreeChips(...) -> use public mapping getter hasClaimedFreeChips(player)
 
     /// @notice Top up chips at a table from your wallet balance (only between hands)
     function topUpTableChips(uint tableId, uint amount) external whenNotPaused atActiveTable(tableId) {
@@ -222,24 +274,41 @@ contract Blackjack {
         emit TableChipsToppedUp(tableId, msg.sender, amount);
     }
 
+    // Owner funds/withdraws bank (optional ETH backing for withdrawals)
+    function fundBank() external payable onlyOwner {
+        require(msg.value > 0, "No ETH sent");
+        uint chips = ethToChips(msg.value);
+        bankChips += chips;
+        emit BankFunded(msg.value, chips);
+    }
+
+    function defundBank(uint chipAmount) external onlyOwner nonReentrant {
+        require(chipAmount > 0 && chipAmount <= bankChips, "Invalid amount");
+        uint weiAmount = chipsToWei(chipAmount);
+        require(address(this).balance >= weiAmount, "Contract lacks ETH");
+        bankChips -= chipAmount;
+        (bool ok,) = payable(msg.sender).call{value: weiAmount}("");
+        require(ok, "ETH transfer failed");
+        emit BankDefunded(chipAmount, weiAmount);
+    }
+
     // ========= Table lifecycle =========
     function createTable(uint _minBuyIn, uint _maxBuyIn) external whenNotPaused {
         require(tables.length < MAX_TABLES, "Max tables");
         require(_minBuyIn > 0 && _maxBuyIn >= _minBuyIn, "Invalid stakes");
-        uint tableId = tables.length + 1;
-        uint8[52] memory emptyDeck;
-        tables.push(Table({
-            id: tableId,
-            status: TableStatus.Waiting,
-            minBuyIn: _minBuyIn,
-            maxBuyIn: _maxBuyIn,
-            deck: emptyDeck,
-            deckIndex: 0,
-            phase: GamePhase.WaitingForPlayers,
-            players: new Player[](0),
-            dealer: Dealer({cards: new Card[](0), hasFinished: false}),
-            lastActivityTimestamp: block.timestamp
-        }));
+
+        tables.push();
+        uint tableId = tables.length;
+        Table storage t = tables[tableId - 1];
+
+        t.id = tableId;
+        t.status = TableStatus.Waiting;
+        t.minBuyIn = _minBuyIn;
+        t.maxBuyIn = _maxBuyIn;
+        t.deckIndex = 0;
+        t.phase = GamePhase.WaitingForPlayers;
+        t.lastActivityTimestamp = block.timestamp;
+
         emit TableCreated(tableId, msg.sender);
     }
 
@@ -251,14 +320,16 @@ contract Blackjack {
         require(playerChips[msg.sender] >= buyInAmount, "Insufficient chips");
 
         playerChips[msg.sender] -= buyInAmount;
-        t.players.push(Player({
-            addr: msg.sender,
-            chips: buyInAmount,
-            bet: 0,
-            cards: new Card[](0),
-            isActive: false,
-            hasActed: true
-        }));
+
+        t.players.push();
+        Player storage p = t.players[t.players.length - 1];
+        p.addr = msg.sender;
+        p.chips = buyInAmount;
+        p.bet = 0;
+        p.isActive = false;
+        p.hasActed = true;
+        // p.cards is empty by default
+
         playerTableId[msg.sender] = tableId;
         t.lastActivityTimestamp = block.timestamp;
         emit PlayerJoined(tableId, msg.sender, buyInAmount);
@@ -293,14 +364,18 @@ contract Blackjack {
             return;
         }
 
-        // Normal leave: return all chips and remove from table
+        // Normal leave
         playerChips[msg.sender] += p.chips;
         for (uint i=idx; i<t.players.length-1; i++) t.players[i] = t.players[i+1];
         t.players.pop();
         playerTableId[msg.sender] = 0;
         emit PlayerLeft(tableId, msg.sender);
 
-        if (t.players.length < 2) { t.status = TableStatus.Waiting; t.phase = GamePhase.WaitingForPlayers; emit PhaseChanged(tableId, GamePhase.WaitingForPlayers); }
+        if (t.players.length < 2) {
+            t.status = TableStatus.Waiting;
+            t.phase = GamePhase.WaitingForPlayers;
+            emit PhaseChanged(tableId, GamePhase.WaitingForPlayers);
+        }
         t.lastActivityTimestamp = block.timestamp;
     }
 
@@ -393,16 +468,11 @@ contract Blackjack {
         t.lastActivityTimestamp = block.timestamp;
     }
 
-    /**
-     * @notice Auto-stand the current player if they exceed TURN_TIMEOUT.
-     * Anyone can call to keep tables flowing.
-     */
     function forceAdvanceOnTimeout(uint tableId) external {
         Table storage t = _getTable(tableId);
         require(t.phase == GamePhase.PlayerTurns, "Not player phase");
         require(block.timestamp >= t.lastActivityTimestamp + TURN_TIMEOUT, "Not timed out");
 
-        // find first waiting player
         for (uint i=0;i<t.players.length;i++) {
             Player storage p = t.players[i];
             if (p.isActive && !p.hasActed) {
@@ -413,14 +483,32 @@ contract Blackjack {
                 return;
             }
         }
-        // if none found, just move to dealer
         _startDealerTurn(tableId);
         t.lastActivityTimestamp = block.timestamp;
     }
 
     // ========= Internal game flow =========
+
+    // Bank coverage pre-check (fail fast before starting a hand)
+    function _requireBankCoverage(uint tableId) internal view {
+        Table storage t = tables[tableId - 1];
+        uint totalBets;
+        for (uint i = 0; i < t.players.length; i++) {
+            if (t.players[i].isActive && t.players[i].bet > 0) {
+                totalBets += t.players[i].bet;
+            }
+        }
+        // Worst-case extra liability if everyone has blackjack = 1.5x total bets
+        uint maxExtra = (totalBets * BLACKJACK_PAYOUT_NUM) / BLACKJACK_PAYOUT_DEN; // 1.5x
+        require(bankChips >= maxExtra, "Bank needs funding");
+    }
+
     function _startNewHand(uint tableId) internal {
         Table storage t = _getTable(tableId);
+
+        // Ensure bankroll can cover worst-case before we deal
+        _requireBankCoverage(tableId);
+
         t.status = TableStatus.Active;
         t.phase  = GamePhase.Dealing;
         t.deckIndex = 0;
@@ -518,9 +606,7 @@ contract Blackjack {
 
     function _advanceToNextPlayer(uint tableId) internal {
         Table storage t = _getTable(tableId);
-        // if any active player still to act, stop here (front-end finds next)
         for (uint i=0;i<t.players.length;i++) if (t.players[i].isActive && !t.players[i].hasActed) return;
-        // if no active players remain (everyone busted or stood), go to dealer
         _startDealerTurn(tableId);
     }
 
@@ -537,9 +623,7 @@ contract Blackjack {
         for (uint i=0;i<t.players.length;i++) if (t.players[i].isActive) { anyActive = true; break; }
         if (!anyActive) {
             t.dealer.hasFinished = true;
-            t.phase = GamePhase.Showdown;
-            _determineWinners(tableId);
-            emit PhaseChanged(tableId, GamePhase.Showdown);
+            _storeAndSettle(tableId);
             return;
         }
 
@@ -553,17 +637,28 @@ contract Blackjack {
         }
 
         t.dealer.hasFinished = true;
-        t.phase = GamePhase.Showdown;
-        _determineWinners(tableId);
-        emit PhaseChanged(tableId, GamePhase.Showdown);
+        _storeAndSettle(tableId);
     }
 
-    function _determineWinners(uint tableId) internal {
+    // Store snapshot & perform chip settlement via bank
+    function _storeAndSettle(uint tableId) internal {
         Table storage t = _getTable(tableId);
+
         uint dealerValue = _calculateHandValue(t.dealer.cards);
         bool dealerBusted = dealerValue > 21;
 
-        // count winners
+        // Count active players & collect bets into bank
+        uint activeCount;
+        uint collected;
+        for (uint i=0;i<t.players.length;i++) {
+            if (t.players[i].isActive) {
+                activeCount++;
+                collected += t.players[i].bet;
+            }
+        }
+        bankChips += collected;
+
+        // Compute winner count for event arrays
         uint winCount;
         for (uint i=0;i<t.players.length;i++) {
             Player storage p = t.players[i];
@@ -571,35 +666,93 @@ contract Blackjack {
             uint pv = _calculateHandValue(p.cards);
             if (pv <= 21 && (dealerBusted || pv > dealerValue)) winCount++;
         }
+        address[] memory winnersAddrs = new address[](winCount);
+        uint[] memory winnersPayouts  = new uint[](winCount);
 
-        address[] memory winners = new address[](winCount);
-        uint[] memory payouts    = new uint[](winCount);
-        uint k;
+        // Build PlayerResult array in memory
+        PlayerResult[] memory resultsTmp = new PlayerResult[](activeCount);
+        uint k; uint w;
 
         for (uint i=0;i<t.players.length;i++) {
             Player storage p = t.players[i];
             if (!p.isActive) continue;
 
             uint pv = _calculateHandValue(p.cards);
-            bool busted = pv > 21;
-            bool pBJ    = _isBlackjack(p.cards);
+            bool bj = _isBlackjack(p.cards);
 
-            if (busted) {
-                // loses bet (chips already deducted at bet time)
+            // copy player's cards to memory
+            Card[] memory pcards = new Card[](p.cards.length);
+            for (uint c=0; c<p.cards.length; c++) pcards[c] = p.cards[c];
+
+            PlayerResult memory pr;
+            pr.addr = p.addr;
+            pr.bet = p.bet;
+            pr.total = pv;
+            pr.cards = pcards;
+
+            if (pv > 21) {
+                pr.outcome = Outcome.Lose;
+                pr.payout = 0;
             } else if (dealerBusted || pv > dealerValue) {
-                uint payout;
-                if (pBJ) payout = p.bet + (p.bet * BLACKJACK_PAYOUT_NUM / BLACKJACK_PAYOUT_DEN); // 2.5x
-                else     payout = p.bet * 2; // 1:1
-                winners[k] = p.addr; payouts[k] = payout; k++;
-                p.chips += payout;
-                emit PayoutSent(tableId, p.addr, payout);
+                pr.outcome = bj ? Outcome.Blackjack : Outcome.Win;
+                pr.payout = bj
+                    ? p.bet + (p.bet * BLACKJACK_PAYOUT_NUM / BLACKJACK_PAYOUT_DEN) // 2.5x
+                    : p.bet * 2; // 2x
+                require(bankChips >= pr.payout, "Bank underfunded");
+                bankChips -= pr.payout;
+                p.chips += pr.payout;
+
+                winnersAddrs[w] = p.addr;
+                winnersPayouts[w] = pr.payout;
+                w++;
+
+                emit PayoutSent(tableId, p.addr, pr.payout);
             } else if (pv == dealerValue) {
-                // push: return bet
+                pr.outcome = Outcome.Push;
+                pr.payout = p.bet; // return bet
+                require(bankChips >= p.bet, "Bank underfunded");
+                bankChips -= p.bet;
                 p.chips += p.bet;
-            } // else lose
+            } else {
+                pr.outcome = Outcome.Lose;
+                pr.payout = 0;
+            }
+
+            resultsTmp[k++] = pr;
         }
 
-        if (winners.length > 0) emit WinnerDetermined(tableId, winners, payouts);
+        if (winCount > 0) emit WinnerDetermined(tableId, winnersAddrs, winnersPayouts);
+
+        // Persist HandResult to storage (deep copies)
+        delete t.lastHandResult.dealerCards;
+        for (uint dc=0; dc<t.dealer.cards.length; dc++) {
+            t.lastHandResult.dealerCards.push(t.dealer.cards[dc]);
+        }
+        t.lastHandResult.dealerTotal = dealerValue;
+        t.lastHandResult.dealerBusted = dealerBusted;
+
+        delete t.lastHandResult.results;
+        for (uint r=0; r<resultsTmp.length; r++) {
+            t.lastHandResult.results.push();
+            PlayerResult storage dst = t.lastHandResult.results[t.lastHandResult.results.length - 1];
+            dst.addr = resultsTmp[r].addr;
+            dst.bet = resultsTmp[r].bet;
+            dst.total = resultsTmp[r].total;
+            dst.outcome = resultsTmp[r].outcome;
+            dst.payout = resultsTmp[r].payout;
+            for (uint rc=0; rc<resultsTmp[r].cards.length; rc++) {
+                dst.cards.push(resultsTmp[r].cards[rc]);
+            }
+        }
+
+        t.lastHandResult.pot = collected;
+        t.lastHandResult.timestamp = block.timestamp;
+
+        // Move to Showdown (snapshot persisted), then clear table state for next hand
+        t.phase = GamePhase.Showdown;
+        emit PhaseChanged(tableId, GamePhase.Showdown);
+        emit HandResultStored(tableId, block.timestamp);
+
         _resetHand(tableId);
     }
 
@@ -637,9 +790,7 @@ contract Blackjack {
 
     function _resetHand(uint tableId) internal {
         Table storage t = _getTable(tableId);
-        t.phase = GamePhase.WaitingForPlayers;
-        emit PhaseChanged(tableId, GamePhase.WaitingForPlayers);
-
+        // Keep lastHandResult for UI until next hand overwrites it
         for (uint i=0;i<t.players.length;i++) {
             delete t.players[i].cards;
             t.players[i].isActive = false;
@@ -649,7 +800,8 @@ contract Blackjack {
         delete t.dealer.cards;
         t.dealer.hasFinished = false;
 
-        // (Optional auto-start decision delegated to frontend)
+        t.phase = GamePhase.WaitingForPlayers;
+        emit PhaseChanged(tableId, GamePhase.WaitingForPlayers);
         t.lastActivityTimestamp = block.timestamp;
     }
 
